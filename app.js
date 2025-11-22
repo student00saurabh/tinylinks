@@ -46,6 +46,11 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 const store = MongoStore.create({
   mongoUrl: dbUrl,
+  cryptor: {
+    secret: process.env.SECRET,
+    algorithm: "aes-256-cbc",
+  },
+  touchAfter: 24 * 60 * 60,
 });
 
 store.on("error", (err) => {

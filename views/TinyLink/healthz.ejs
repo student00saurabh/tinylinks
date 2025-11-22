@@ -1,0 +1,48 @@
+<% layout("/layouts/boilerplate") -%>
+
+<div class="container mx-auto max-w-2xl mt-16 p-6 rounded-lg shadow-lg bg-white border">
+  <h1 class="text-2xl font-bold text-gray-800 text-center mb-6">🔧 System Dashboard</h1>
+
+  <div class="space-y-6">
+
+    <!-- Health Check Card -->
+    <div class="p-5 border rounded-lg bg-gray-50 shadow-md">
+      <h2 class="text-xl font-semibold text-gray-700 mb-2">Server Health Status</h2>
+      <p class="text-sm text-gray-500">Click the button below to check if the TinyLinks server is working properly.</p>
+
+      <button id="checkHealthBtn"
+        class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+        🚑 Check Health
+      </button>
+
+      <!-- Response Box -->
+      <div id="healthResponse" class="mt-4 p-3 rounded-md hidden"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.getElementById("checkHealthBtn").addEventListener("click", async () => {
+    const responseBox = document.getElementById("healthResponse");
+    responseBox.classList.remove("hidden");
+    responseBox.innerHTML = "⏳ Checking...";
+    responseBox.className = "mt-4 p-3 rounded-md bg-gray-200 text-gray-700";
+
+    try {
+      const res = await fetch("/healthz");
+      const data = await res.json();
+
+      responseBox.innerHTML = `
+        <strong>Status:</strong> ${data.status} <br>
+        <strong>Message:</strong> ${data.message} <br>
+        <strong>Timestamp:</strong> ${data.timestamp}
+      `;
+      responseBox.className = "mt-4 p-3 rounded-md bg-green-100 border border-green-400 text-green-800";
+    } catch (error) {
+      responseBox.innerHTML = "❌ Unable to contact server.";
+      responseBox.className = "mt-4 p-3 rounded-md bg-red-100 border border-red-400 text-red-800";
+    }
+  });
+</script>
+

@@ -1,0 +1,143 @@
+<% layout("/layouts/boilerplate") -%>
+
+<div class="max-w-6xl mx-auto mt-10 px-4 space-y-8">
+
+  <!-- Header -->
+  <div class="flex flex-col gap-1">
+    <h1 class="text-3xl font-semibold">👋 Welcome, <%= currUser.username %></h1>
+    <p class="text-gray-600 text-sm">Manage and track your shortened links with analytics & quick actions.</p>
+  </div>
+
+  <!-- Add Link Form -->
+  <form action="/stats" method="POST"
+  class="bg-white shadow-md border rounded-xl p-6 flex flex-col gap-4">
+
+  <div class="grid md:grid-cols-3 gap-3">
+
+    <!-- Long URL -->
+    <input 
+      required
+      type="url"
+      name="fullURL"
+      placeholder="Enter long URL"
+      class="border p-3 rounded-md outline-none focus:ring focus:ring-blue-300 transition"
+    >
+
+    <!-- Custom Short Code -->
+    <input
+      type="text"
+      name="shortId"
+      placeholder="Custom short code (optional)"
+      class="border p-3 rounded-md outline-none focus:ring focus:ring-blue-300 transition"
+    >
+
+    <!-- Submit -->
+    <button
+      class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-medium transition flex items-center justify-center gap-2"
+    >
+      🔗 Shorten Link
+    </button>
+  </div>
+
+  <!-- small note -->
+  <p class="text-xs text-gray-500 mt-1">
+    If custom code is not provided, a random short link will be generated automatically.
+  </p>
+</form>
+
+
+  
+
+  <!-- Links List -->
+  <% if (links.length === 0) { %>
+    <div class="text-center mt-16">
+      <img src="https://cdn-icons-png.flaticon.com/512/4466/4466623.png" class="w-52 mx-auto opacity-70 mb-4">
+      <h3 class="text-lg font-medium text-gray-700 mb-1">No links created yet</h3>
+      <p class="text-gray-500 text-sm">Start shortening your first link above 👆</p>
+    </div>
+  <% } else { %>
+    <div class="overflow-x-auto rounded-xl shadow-sm border">
+      <h3 class="text-xl font-semibold mb-4">⏱️ Your Latest Links</h3>
+      <table class="w-full text-left border-collapse bg-white">
+        <thead>
+          <tr class="border-b bg-gray-50 text-sm text-gray-700 uppercase tracking-wide">
+            <th class="p-4">Code</th>
+            <th class="p-4">Target URL</th>
+            <th class="p-4 text-center">Clicks</th>
+            <th class="p-4 text-center">Last Clicked</th>
+            <th class="p-4 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% links.forEach(link => { %>
+            <tr class="border-b hover:bg-gray-50 transition">
+              <!-- Short Code -->
+              <td class="p-4 font-semibold text-blue-600">
+  <a href="<%= baseURL %>/stats/<%= link.shortId %>" target="_blank" class="hover:underline">
+    <%= link.shortId %>
+  </a>
+</td>
+
+              <!-- Long URL -->
+              <td class="p-4 max-w-md truncate">
+                <a href="<%= link.fullURL %>" class="text-gray-700 hover:underline" target="_blank">
+                  <%= link.fullURL %>
+                </a>
+              </td>
+
+              <!-- Click Count -->
+              <td class="p-4 text-center font-medium">
+                <%= link.clicks %>
+              </td>
+
+              <!-- Created At -->
+              <td class="p-4 text-center">
+                <%= link.createdAt ? link.createdAt.toLocaleString() : "—" %>
+              </td>
+
+               <!-- Actions -->
+              <td class="p-4 flex gap-2 justify-center text-sm">
+
+                <!-- Stats Page -->
+                <a href="/stats/<%= link.shortId %>" target="_blank"
+                  class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300 transition">
+                  Stats
+                </a>
+
+                <!-- Copy -->
+              <script>
+  function showToast(msg) {
+    const toast = document.createElement("div");
+    toast.innerText = msg;
+    toast.className = "fixed bottom-6 right-6 bg-black text-white px-4 py-2 rounded shadow animate-fade";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  }
+</script>
+
+<button onclick="navigator.clipboard.writeText('<%= baseURL %>/stats/<%= link.shortId %>'); showToast('Copied!')"
+class="bg-blue-200 px-3 py-1 rounded-md hover:bg-blue-300 transition">
+  Copy
+</button>
+
+<style>
+@keyframes fade {
+  0% { opacity: 0; transform: translateY(10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(10px); }
+}
+.animate-fade { animation: fade 2s forwards; }
+</style>
+
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+
+      </table>
+    </div>
+  <% } %>
+
+  <!-- Bottom Stats Section -->
+</div>

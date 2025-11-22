@@ -1,0 +1,20 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-red-50 via-red-100 to-white px-4">
+  
+  <!-- Error Code -->
+  <h1 class="text-6xl md:text-8xl font-extrabold text-red-600 mb-4 drop-shadow-lg">
+    <%= statusCode %>
+  </h1>
+
+  <!-- Error Message -->
+  <h2 class="text-xl md:text-2xl text-gray-700 mb-8 text-center">
+    <%= message %>
+  </h2>
+
+  <!-- Home Button -->
+  <a href="/" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-2xl shadow-lg transition-all duration-300">
+    Go to Home
+  </a>
+
+</div>

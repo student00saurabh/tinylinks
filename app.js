@@ -86,12 +86,27 @@ app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.currUser = req.user;
+  res.locals.currentPath = req.path;
   next();
 });
 
-// app.get("/", async (req, res) => {
-//   res.render("TinyLink/home.ejs");
-// });
+app.get("/", async (req, res, next) => {
+  if (!req.user) {
+    const totalUrls = await Link.countDocuments();
+    const totalUsers = await User.countDocuments();
+    const totalClicks = await Link.aggregate([
+      { $group: { _id: null, clicks: { $sum: "$clicks" } } },
+    ]);
+    res.render("TinyLink/index.ejs", {
+      totalUrls,
+      totalUsers,
+      totalClicks: totalClicks[0]?.clicks || 0,
+    });
+  } else {
+    next();
+  }
+});
+
 app.use("/", userRouter);
 app.use("/", homeRouter);
 app.use("/stats", linkRouter);

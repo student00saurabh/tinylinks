@@ -1,215 +1,156 @@
 <% layout("/layouts/boilerplate") -%>
 <style>
   @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(.92);
+    from { opacity: 0; transform: scale(.92); }
+    to { opacity: 1; transform: scale(1); }
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+
+  @keyframes fade {
+    0% { opacity: 0; transform: translateY(10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(10px); }
   }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.2s ease-out;
-}
-
+  .animate-fade { animation: fade 2s forwards; }
 </style>
 
+<div class="min-h-screen bg-gradient-to-br from-green-100 via-white to-green-50 p-6
+            dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
 
-<div class="min-h-screen bg-gradient-to-br from-green-100 via-white to-green-50 p-6">
-  
-<!-- Bottom Stats Section -->
-  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-10">
+  <!-- Bottom Stats Section -->
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-10
+              dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
     <h2 class="text-xl font-semibold mb-2">🔍 Quick Summary</h2>
-    <p class="text-gray-700 text-sm">
+    <p class="text-gray-700 text-sm dark:text-gray-300">
       Total Links: <b><%= links.length %></b>
       &nbsp; | &nbsp;
       Total Clicks: <b><%= links.reduce((total, l) => total + l.clicks, 0) %></b>
     </p>
+    <div class="mb-4 mt-4 mx-w-50">
+  <input id="searchInput" type="text" placeholder="Search by code or URL..."
+         class="border p-3 rounded-md w-full dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
+         onkeyup="searchLinks()" />
+</div>
   </div>
 
-  <!-- Dashboard Container -->
-  <div class="max-w-5xl mx-auto mt-12 bg-white/30 backdrop-blur-xl p-8 rounded-2xl shadow-lg border">
 
-    <!-- Title & Health Check -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-3">
-      <h1 class="text-2xl font-bold text-green-800">📌 Your Shortened Links</h1>
+  <!-- Links List -->
+  <div class="mt-12 space-y-4">
+
+    <% links.forEach(link => { %>
+    <div class="links-card bg-white dark:bg-gray-800 border dark:border-gray-600 dark:shadow-sm rounded-2xl shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between animate-fadeIn">
       
+      <!-- Code & URL -->
+      <div class="flex flex-col md:flex-row md:items-center md:space-x-4 flex-1 mb-2 md:mb-0">
+        <a href="<%= baseURL %>/stats/<%= link.shortId %>" target="_blank"
+           class="font-semibold text-blue-600 dark:text-blue-400 hover:underline md:w-24">
+          <%= link.shortId %>
+        </a>
+        <a href="<%= link.fullURL %>" target="_blank"
+   class="text-gray-700 dark:text-gray-200 hover:underline md:flex-1">
+  <%= link.fullURL.length > 30 ? link.fullURL.slice(0, 30) + '...' : link.fullURL %>
+</a>
+
+      </div>
+
+      <!-- Clicks & Last Clicked -->
+      <div class="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2 md:mb-0">
+        <span>Clicks: <b><%= link.clicks %></b></span>
+        <span>Last: <%= link.createdAt ? link.createdAt.toLocaleString() : "—" %></span>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-2 justify-start md:justify-end p-2">
+        <a href="/stats/<%= link.shortId %>" target="_blank"
+           class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-200 transition text-sm">
+          Stats
+        </a>
+        <button onclick="navigator.clipboard.writeText('<%= baseURL %>/stats/<%= link.shortId %>'); showToast('Copied!')"
+           class="bg-blue-200 px-3 py-1 rounded-md hover:bg-blue-300 dark:bg-blue-700 dark:hover:bg-blue-600 dark:text-white transition text-sm">
+          Copy
+        </button>
+        <button onclick="openEditModal('<%= link._id %>', '<%= link.fullURL %>', '<%= link.shortId %>')"
+           class="bg-yellow-200 px-3 py-1 rounded-md hover:bg-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-500 dark:text-gray-900 transition text-sm">
+          Edit
+        </button>
+        <form action="/stats/<%= link._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this link?')">
+          <button class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600 transition text-sm">
+            Delete
+          </button>
+        </form>
+      </div>
+
     </div>
-
-
-    <!-- Search -->
-    <div class="mb-4">
-      <input id="searchInput" type="text" placeholder="Search by code or URL..."
-        class="border p-3 rounded-md w-full" onkeyup="searchTable()" />
-    </div>
-
-    <!-- Links Table -->
-    <div class="overflow-auto rounded-lg border shadow">
-      <table class="w-full text-sm">
-        <thead class="bg-green-600 text-white">
-          <tr>
-            <th class="p-3 text-left">Code</th>
-            <th class="p-3 text-left">Target URL</th>
-            <th class="p-3 text-center">Clicks</th>
-            <th class="p-3 text-center">Last Clicked</th>
-            <th class="p-3 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="linksTable">
-          <% links.forEach(link => { %>
-            <tr class="border-b hover:bg-gray-50 transition">
-              <!-- Short Code -->
-              <td class="p-4 font-semibold text-blue-600">
-  <a href="<%= baseURL %>/stats/<%= link.shortId %>" target="_blank" class="hover:underline">
-    <%= link.shortId %>
-  </a>
-</td>
-
-              <!-- Long URL -->
-              <td class="p-4 max-w-md truncate">
-                <a href="<%= link.fullURL %>" class="text-gray-700 hover:underline" target="_blank">
-                  <%= link.fullURL %>
-                </a>
-              </td>
-
-              <!-- Click Count -->
-              <td class="p-4 text-center font-medium">
-                <%= link.clicks %>
-              </td>
-
-              <!-- Created At -->
-              <td class="p-4 text-center">
-                <%= link.createdAt ? link.createdAt.toLocaleString() : "—" %>
-              </td>
-
-               <!-- Actions -->
-              <td class="p-4 flex gap-2 justify-center text-sm">
-
-                <!-- Stats Page -->
-                <a href="/stats/<%= link.shortId %>" target="_blank"
-                  class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300 transition">
-                  Stats
-                </a>
-
-                <!-- Copy -->
-              <script>
-  function showToast(msg) {
-    const toast = document.createElement("div");
-    toast.innerText = msg;
-    toast.className = "fixed bottom-6 right-6 bg-black text-white px-4 py-2 rounded shadow animate-fade";
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-  }
-</script>
-
-<button onclick="navigator.clipboard.writeText('<%= baseURL %>/stats/<%= link.shortId %>'); showToast('Copied!')"
-class="bg-blue-200 px-3 py-1 rounded-md hover:bg-blue-300 transition">
-  Copy
-</button>
-
-<style>
-@keyframes fade {
-  0% { opacity: 0; transform: translateY(10px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(10px); }
-}
-.animate-fade { animation: fade 2s forwards; }
-</style>
-
-            <!-- Edit -->
-            <button
-              onclick="openEditModal('<%= link._id %>', '<%= link.fullURL %>', '<%= link.shortId %>')"
-              class="bg-yellow-200 px-3 py-1 rounded-md hover:bg-yellow-300 transition">
-                Edit
-            </button>
-
-
-
-
-
-
-
-
-            
-            <!-- Delete -->
-              <form action="/stats/<%= link._id %>?_method=DELETE" method="POST"
-                  onsubmit="return confirm('Are you sure you want to permanently delete this link?')">
-                <button
-                  class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition">
-                   Delete
-                </button>
-              </form>
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
+    <% }) %>
 
   </div>
 </div>
 
 <script>
-  function searchTable() {
-    let input = document.getElementById("searchInput").value.toLowerCase();
-    let rows = document.querySelectorAll("#linksTable tr");
 
-    rows.forEach(row => {
-      row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
-    });
+  function searchLinks() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const cards = document.querySelectorAll(".links-card"); // we'll add this class to each card
+  cards.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    card.style.display = text.includes(input) ? "flex" : "none";
+  });
+}
+
+
+  function showToast(msg) {
+    const toast = document.createElement("div");
+    toast.innerText = msg;
+    toast.className = "fixed bottom-6 right-6 bg-black text-white px-4 py-2 rounded shadow animate-fade dark:bg-gray-700 dark:text-gray-200";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  }
+
+  function openEditModal(id, fullURL, shortId) {
+    const modal = document.getElementById("editModal");
+    modal.classList.remove("hidden");
+
+    document.getElementById("editFullURL").value = fullURL;
+    document.getElementById("editShortId").value = shortId;
+    document.getElementById("editForm").action = `/stats/${id}?_method=PUT`;
+  }
+  function closeEditModal() {
+    document.getElementById("editModal").classList.add("hidden");
   }
 </script>
 
-
 <!-- Edit Popup -->
-<div id="editModal"
-  class="fixed inset-0 hidden items-center justify-center backdrop-blur-md bg-[#1e293b]/50 z-50">
-
-  <div class="bg-white mt-40 p-6 rounded-2xl w-96 relative shadow-2xl animate-fadeIn scale-100 items-center justify-center">
+<div id="editModal" 
+     class="fixed inset-0 hidden z-[9999] flex items-start justify-center bg-black/30 backdrop-blur-sm">
+  <div class="!top-1/2 !-translate-y-1/2 bg-white dark:bg-gray-800 p-6 rounded-2xl w-96 shadow-2xl animate-fadeIn
+              flex flex-col items-center justify-center relative m-2">
     
     <button onclick="closeEditModal()" 
-      class="absolute right-3 top-2 text-xl font-bold text-gray-600 hover:text-red-500 transition">
+            class="absolute right-3 top-2 text-xl font-bold text-gray-600 dark:text-gray-300 hover:text-red-500 transition">
       ×
     </button>
 
-    <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">Edit Link</h2>
+    <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800 dark:text-gray-200">Edit Link</h2>
 
-    <form id="editForm" method="POST">
-      <label class="text-sm font-medium">Full URL</label>
+    <form id="editForm" method="POST" class="w-full">
+      <label class="text-sm font-medium dark:text-gray-200">Full URL</label>
       <input type="text" name="fullURL" id="editFullURL"
-        class="border p-2 rounded-md w-full mb-2 focus:ring-2 focus:ring-blue-500 outline-none"
-        required>
+             class="border p-2 rounded-md w-full mb-2 focus:ring-2 focus:ring-blue-500 outline-none
+                    dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+             required>
 
-      <label class="text-sm font-medium">Custom Short ID</label>
+      <label class="text-sm font-medium dark:text-gray-200">Custom Short ID</label>
       <input type="text" name="customShortId" id="editShortId"
-        class="border p-2 rounded-md w-full mb-4 focus:ring-2 focus:ring-blue-500 outline-none"
-        required>
+             class="border p-2 rounded-md w-full mb-4 focus:ring-2 focus:ring-blue-500 outline-none
+                    dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+             required>
 
       <button
-        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full font-medium transition">
+        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full font-medium transition
+               dark:bg-green-700 dark:hover:bg-green-600">
         Save Changes
       </button>
     </form>
   </div>
 </div>
-
-
-
-<script>
-  function openEditModal(id, fullURL, shortId) {
-    const modal = document.getElementById("editModal");
-    modal.classList.remove("hidden");
-    
-    document.getElementById("editFullURL").value = fullURL;
-    document.getElementById("editShortId").value = shortId;
-    document.getElementById("editForm").action = `/stats/${id}?_method=PUT`;
-  }
-
-  function closeEditModal() {
-    document.getElementById("editModal").classList.add("hidden");
-  }
-</script>

@@ -1,0 +1,135 @@
+<% layout("/layouts/boilerplate") -%>
+
+<!-- hero section -->
+<section class="bg-gray-50 dark:bg-gray-900 py-20 text-center transition-all">
+  <div class="container mx-auto px-4">
+    <h1 class="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white">
+      Welcome to <span class="text-green-600 dark:text-green-400">TinyLinks</span>
+    </h1>
+    <p class="mt-4 text-gray-600 dark:text-gray-200 text-lg md:text-xl">
+      Smart, secure and customizable URL shortener for everyone.
+    </p>
+
+    <div class="mt-8">
+      <a href="/signup"
+        class="bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-700 dark:hover:bg-green-500 transition-all">
+        Get Started
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- counter section -->
+<section class="py-16 bg-white dark:bg-gray-800 transition-all">
+  <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+
+    <div class="p-8 rounded-xl shadow-md bg-gray-50 hover:text-white text-gray-700 dark:bg-gray-700 hover:bg-green-500 dark:hover:bg-green-900 hover:shadow-xl transition-all">
+      <h3 class="text-4xl font-bold text-green-800 dark:text-green-400 counter" data-target="<%= totalUrls %>">0</h3>
+      <p class="mt-2 dark:text-gray-200 font-medium">URLs Shortened</p>
+    </div>
+
+    <div class="p-8 rounded-xl shadow-md bg-gray-50 hover:text-white text-gray-700 dark:bg-gray-700 hover:bg-green-500 dark:hover:bg-green-900 hover:shadow-xl transition-all">
+      <h3 class="text-4xl font-bold text-green-800 dark:text-green-400 counter" data-target="<%= totalUsers %>">0</h3>
+      <p class="mt-2 dark:text-gray-200 font-medium">Registered Users</p>
+    </div>
+
+    <div class="p-8 rounded-xl shadow-md bg-gray-50 hover:text-white text-gray-700 dark:bg-gray-700 hover:bg-green-500 dark:hover:bg-green-900 hover:shadow-xl transition-all">
+      <h3 class="text-4xl font-bold text-green-800 dark:text-green-400 counter" data-target="<%= totalClicks %>">0</h3>
+      <p class="mt-2 dark:text-gray-200 font-medium">Total Clicks Tracked</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- feature cards -->
+<section class="py-20 bg-gray-100 dark:bg-gray-900 transition-all">
+  <div class="container mx-auto px-4 text-center">
+
+    <h2 class="text-3xl md:text-4xl font-bold text-green-600 dark:text-green-400">Our Features</h2>
+    <p class="text-gray-600 dark:text-gray-300 mt-3">Everything you need to manage your links smartly.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+
+      <!-- Feature Cards -->
+      <div class="feature-card p-8 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer 
+        transition-all hover:bg-green-500 hover:text-white dark:hover:bg-green-900 dark:text-gray-200 hover:shadow-xl">
+        <h3 class="text-xl font-semibold mb-3">Custom Short URLs</h3>
+        <p>Create short URLs and customize their text as you wish.</p>
+      </div>
+
+      <div class="feature-card p-8 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer 
+        transition-all hover:bg-green-500 hover:text-white dark:hover:bg-green-900 dark:text-gray-200 hover:shadow-xl">
+        <h3 class="text-xl font-semibold mb-3">Public / Private Links</h3>
+        <p>Set your links as private or public. Full control is yours.</p>
+      </div>
+
+      <div class="feature-card p-8 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer 
+        transition-all hover:bg-green-500 hover:text-white dark:hover:bg-green-900 dark:text-gray-200 hover:shadow-xl">
+        <h3 class="text-xl font-semibold mb-3">Advanced Analytics</h3>
+        <p>Track clicks, locations, devices, platforms, and timestamps.</p>
+      </div>
+
+      <div class="feature-card p-8 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer 
+        transition-all hover:bg-green-500 hover:text-white dark:hover:bg-green-900 dark:text-gray-200 hover:shadow-xl">
+        <h3 class="text-xl font-semibold mb-3">Real-Time Tracking</h3>
+        <p>View click numbers updating instantly.</p>
+      </div>
+
+      <div class="feature-card p-8 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer 
+        transition-all hover:bg-green-500 hover:text-white dark:hover:bg-green-900 dark:text-gray-200 hover:shadow-xl">
+        <h3 class="text-xl font-semibold mb-3">Unlimited Links</h3>
+        <p>Create as many short URLs as you want.</p>
+      </div>
+
+      <div class="feature-card p-8 bg-white dark:bg-gray-700 rounded-xl shadow-md cursor-pointer 
+        transition-all hover:bg-green-500 hover:text-white dark:hover:bg-green-900 dark:text-gray-200 hover:shadow-xl">
+        <h3 class="text-xl font-semibold mb-3">Encrypted URLs</h3>
+        <p>Encrypt links so only you can access them.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- trust build section -->
+<section class="py-20 bg-white dark:bg-gray-800 transition-all">
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold  text-green-600 dark:text-green-400">Your Security, Our Priority</h2>
+    <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-3">
+      TinyLinks ensures your data stays private. No admin panel, no manual access,
+      no one except <b>you</b> can view, edit, delete or modify your links.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mt-16">
+
+      <div class="p-8 bg-gray-50 dark:bg-gray-700 hover:text-white text-gray-700 shadow-md rounded-xl transition hover:bg-green-500 hover:text-white dark:hover:bg-green-900">
+        <h3 class="text-xl font-semibold dark:text-gray-100">User Controlled</h3>
+        <p class="mt-2 dark:text-gray-300">Only you can manage your links — edit, delete, private/public/encrypted.</p>
+      </div>
+
+      <div class="p-8 bg-gray-50 dark:bg-gray-700 hover:text-white text-gray-700 shadow-md rounded-xl transition hover:bg-green-500 hover:text-white dark:hover:bg-green-900">
+        <h3 class="text-xl font-semibold  dark:text-gray-100">No Admin Interference</h3>
+        <p class="mt-2  dark:text-gray-300">No one has access to your analytics or personal data.</p>
+      </div>
+
+      <div class="p-8 bg-gray-50 dark:bg-gray-700 hover:text-white text-gray-700 shadow-md rounded-xl transition hover:bg-green-500 hover:text-white dark:hover:bg-green-900">
+        <h3 class="text-xl font-semibold dark:text-gray-100">Secure & Encrypted</h3>
+        <p class="mt-2 dark:text-gray-300">Sensitive URLs can be encrypted for maximum security.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- call to action -->
+<section class="py-20 bg-green-600 text-center dark:bg-green-500 transition-all">
+  <h2 class="text-3xl md:text-4xl font-bold text-white dark:text-green-800">Start Shortening Your URLs Today</h2>
+  <p class="mt-3 text-white/90 text-lg">Quick, secure and powerful link management.</p>
+
+  <div class="mt-6">
+    <a href="/signup"
+      class="bg-green-700 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-800 dark:bg-green-600 dark:hover:bg-green-650 transition">
+      Create Your Account
+    </a>
+  </div>
+</section>

@@ -1,47 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>TinyLinks</title>
-  <meta name="description" content="TinyLinks - A URL shortening service that allows you to create, manage, and track short links easily.">
-  <meta name="keywords" content="URL shortening, link management, TinyLinks, short links, link tracking">
-  <meta name="author" content="Saurabh Mishra">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <!-- Tailwind CSS CDN -->
+  <title>TinyLinks</title>
+
+  <!-- Meta -->
+  <meta name="description" content="TinyLinks - A URL shortening service..." />
+  <meta name="keywords" content="URL shortening, short links, link tracking" />
+  <meta name="author" content="Saurabh Mishra" />
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
+
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+  />
 
   <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+<script>
+  if (localStorage.theme === "dark") {
+    document.documentElement.classList.add("dark");
+  }
+</script>
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
 
-  <!-- AOS for animations -->
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/output.css" />
+
+  <!-- Important for Smooth Theme Transition -->
+  <style>
+    html {
+      transition: background-color 0.25s, color 0.25s;
+    }
+    body {
+      transition: background-color 0.25s, color 0.25s;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
+
+<!-- Default background for light mode -->
+<body class="bg-gray-50 font-sans text-gray-800 dark:bg-black">
 
   <!-- Navbar -->
-  <%- include("../includes/navbar.ejs") -%>
+  <%- include("../includes/navbar.ejs") %>
 
-  <!-- Main Container -->
-  <div class="container mx-auto px-4 py-8">
-    <%- include("../includes/flash.ejs") -%>
-    <%- body -%>
+  <!-- Flash Messages -->
+  <div class="w-full mx-auto">
+    <%- include("../includes/flash.ejs") %>
+    <%- body %>
   </div>
 
   <!-- Footer -->
-  <%- include("../includes/footer.ejs") -%>
+  <%- include("../includes/footer.ejs") %>
 
-  <!-- Scripts -->
-  <script src="/js/script.js"></script>
+  <!-- AOS -->
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-  <script>
-    AOS.init();
-  </script>
+  <script>AOS.init();</script>
+
+  <!-- App Script -->
+  <script src="/js/script.js"></script>
+
 </body>
 </html>

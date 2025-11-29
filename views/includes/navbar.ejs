@@ -1,70 +1,176 @@
-<nav class="bg-white shadow-md sticky top-0 z-50">
-  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-    
-    <!-- Logo -->
-    <a href="/" class="flex items-center">
-      <img src="/images/logo.png" alt="TinyLinks" class="w-36 h-14 object-contain">
-    </a>
+<style>
+  .logo-outline {
+  -webkit-filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9))
+                  drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9))
+          drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+  transition: 0.3s ease-in-out;
+}
 
-    <!-- Desktop Links -->
-    <div class="hidden md:flex items-center space-x-6">
-      <a href="/" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Home</a>
-      
-      <% if(currUser) { %>
-        <a href="/healthcheck" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Check Health</a>
-        <a href="/stats" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Dashboard</a>
-        <a href="/profile" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Profile</a>
-        
-      <% } else { %>
-        <a href="/signup" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Signup</a>
-        <a href="/login" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Login</a>
-      <% } %>
+.dark .logo-outline {
+  -webkit-filter: drop-shadow(0 0 4px rgba(0, 255, 0, 0.8))
+                  drop-shadow(0 0 10px rgba(0, 255, 0, 0.5));
+  filter: drop-shadow(0 0 4px rgba(0, 255, 0, 0.8))
+          drop-shadow(0 0 10px rgba(0, 255, 0, 0.5));
+}
+</style>
+
+<nav class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition duration-300">
+  <div class="mx-auto px-8 py-5 flex items-center justify-between">
+
+    <!-- LEFT SIDE: LOGO + HOME -->
+    <div class="flex items-center space-x-6">
+      <!-- Logo -->
+      <a href="/" class="flex items-center">
+        <img src="/images/logo.png" alt="TinyLinks" class="w-36 h-14 object-contain logo-outline">
+      </a>
+
+      <!-- Home Link (Left Side) -->
+       <div class="hidden md:flex">
+      <a href="/"
+        class="<%= currentPath === '/' 
+          ? 'text-green-500 font-semibold border-b-2 border-green-500 pb-1' 
+          : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+        Home
+      </a>
+      </div>
     </div>
 
-    <!-- Mobile Menu Button -->
+    <!-- RIGHT SIDE: MENU + THEME TOGGLE -->
+    <div class="hidden md:flex items-center space-x-8">
+
+      <% if(currUser) { %>
+
+        <a href="/healthcheck"
+          class="<%= currentPath === '/healthcheck' 
+            ? 'text-green-500 font-semibold border-b-2 border-green-500 pb-1' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Check Health
+        </a>
+
+        <a href="/stats"
+          class="<%= currentPath === '/stats' 
+            ? 'text-green-500 font-semibold border-b-2 border-green-500 pb-1' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Dashboard
+        </a>
+
+        <a href="/profile"
+          class="<%= currentPath === '/profile' 
+            ? 'text-green-500 font-semibold border-b-2 border-green-500 pb-1' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Profile
+        </a>
+
+      <% } else { %>
+
+        <a href="/signup"
+          class="<%= currentPath === '/signup' 
+            ? 'text-green-500 font-semibold border-b-2 border-green-500 pb-1' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Signup
+        </a>
+
+        <a href="/login"
+          class="<%= currentPath === '/login' 
+            ? 'text-green-500 font-semibold border-b-2 border-green-500 pb-1' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Login
+        </a>
+
+      <% } %>
+
+      <!-- DESKTOP DARK MODE TOGGLE -->
+      <button id="theme-toggle" 
+        class="text-gray-700 dark:text-yellow-500 text-2xl hover:text-green-500 transition">
+        <i id="theme-icon" class="fa-solid fa-moon"></i>
+      </button>
+
+    </div>
+
+    <!-- MOBILE MENU BUTTON -->
     <div class="md:hidden">
-      <button id="mobile-menu-button" class="text-gray-700 focus:outline-none">
+      <button id="mobile-menu-button" 
+        class="text-gray-700 dark:text-gray-300 focus:outline-none">
         <i class="fa-solid fa-bars fa-lg"></i>
       </button>
     </div>
+
   </div>
 
-  <!-- Mobile Sidebar -->
-  <div id="mobile-menu" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 z-50 md:hidden">
-    <div class="flex justify-between items-center px-4 py-4 border-b">
-      <h3 class="text-xl font-semibold text-gray-700">Menu</h3>
-      <button id="mobile-menu-close" class="text-gray-700 focus:outline-none">
+  <!-- MOBILE SIDEBAR -->
+  <div id="mobile-menu"
+    class="fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg transform translate-x-full transition-transform duration-300 z-50 md:hidden">
+
+    <div class="flex justify-between items-center px-4 py-4 border-b dark:border-gray-700">
+      <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200">Menu</h3>
+      <button id="mobile-menu-close" class="text-gray-700 dark:text-gray-300">
         <i class="fa-solid fa-xmark fa-lg"></i>
       </button>
     </div>
-    <div class="flex flex-col px-4 py-6 space-y-4">
-      <a href="/" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Home</a>
-      <a href="/healthz" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Check Health</a>
-      
+
+    <div class="flex flex-col px-4 py-6 space-y-5">
+
+      <a href="/"
+        class="<%= currentPath === '/' 
+          ? 'text-green-500 font-semibold underline' 
+          : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+        Home
+      </a>
+
       <% if(currUser) { %>
-        <a href="/stats" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Dashboard</a>
-        <a href="/profile" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Profile</a>
-          <a href="/logout" class="text-red-600 hover:text-red-800 font-medium transition duration-200">Logout</a>
+
+        <a href="/healthcheck"
+          class="<%= currentPath === '/healthcheck' 
+            ? 'text-green-500 font-semibold underline' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Check Health
+        </a>
+
+        <a href="/stats"
+          class="<%= currentPath === '/stats' 
+            ? 'text-green-500 font-semibold underline' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Dashboard
+        </a>
+
+        <a href="/profile"
+          class="<%= currentPath === '/profile' 
+            ? 'text-green-500 font-semibold underline' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Profile
+        </a>
+
+        <a href="/logout" class="text-red-600 hover:text-red-800 font-medium text-lg">
+          Logout
+        </a>
+
       <% } else { %>
-        <a href="/signup" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Signup</a>
-        <a href="/login" class="text-gray-700 hover:text-green-500 font-medium transition duration-200">Login</a>
+
+        <a href="/signup"
+          class="<%= currentPath === '/signup' 
+            ? 'text-green-500 font-semibold underline' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Signup
+        </a>
+
+        <a href="/login"
+          class="<%= currentPath === '/login' 
+            ? 'text-green-500 font-semibold underline' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Login
+        </a>
+
       <% } %>
+
+      <!-- MOBILE THEME TOGGLE -->
+      <button id="mobile-theme-toggle" 
+        class="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-green-500 transition text-lg">
+        <i id="mobile-theme-icon" class="fa-solid fa-moon"></i>
+        <span id="mobile-theme-text">Dark Mode</span>
+      </button>
+
     </div>
+
   </div>
 </nav>
-
-<script>
-const mobileMenu = document.getElementById("mobile-menu");
-const openBtn = document.getElementById("mobile-menu-button");
-const closeBtn = document.getElementById("mobile-menu-close");
-
-openBtn.addEventListener("click", () => {
-  mobileMenu.classList.remove("translate-x-full");
-  mobileMenu.classList.add("translate-x-0");
-});
-
-closeBtn.addEventListener("click", () => {
-  mobileMenu.classList.remove("translate-x-0");
-  mobileMenu.classList.add("translate-x-full");
-});
-</script>

@@ -5,6 +5,7 @@ const { isLoggedIn } = require("../middleware");
 
 // ⭐ Show all links belonging to logged-in user
 router.get("/", isLoggedIn, linkController.getAllLinks);
+router.get("/public-links", linkController.publickLinks);
 
 // ⭐ Create short link
 router.post("/", isLoggedIn, linkController.createLink);

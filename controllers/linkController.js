@@ -1,6 +1,41 @@
 const Link = require("../models/Link");
 const shortid = require("shortid");
 const validUrl = require("valid-url");
+const geoip = require("geoip-lite");
+const userAgent = require("ua-parser-js");
+const crypto = require("crypto");
+
+// Controller: publickLinks
+module.exports.publickLinks = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // default page 1
+    const limit = 20; // links per page
+    const skip = (page - 1) * limit;
+
+    const totalLinks = await Link.countDocuments({ private: false });
+    const links = await Link.find({ private: false })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalLinks / limit);
+
+    res.render("TinyLink/links.ejs", {
+      links,
+      currentPage: page,
+      totalPages,
+      baseURL: process.env.BASE_URL || "http://localhost:3000",
+    });
+  } catch (err) {
+    console.error(err);
+    res.render("TinyLink/links.ejs", {
+      links: [],
+      currentPage: 1,
+      totalPages: 1,
+      baseURL: "",
+    });
+  }
+};
 
 // 🔹 Dashboard - fetch all links belonging to logged-in user
 exports.getAllLinks = async (req, res) => {
@@ -24,7 +59,7 @@ exports.createLink = async (req, res) => {
   try {
     if (!req.user) return res.redirect("/login");
 
-    const { fullURL, shortId } = req.body;
+    const { fullURL, shortId, private, encrypted } = req.body;
 
     // Input long URL validation
     if (!fullURL || fullURL.trim() === "") {
@@ -50,14 +85,12 @@ exports.createLink = async (req, res) => {
     if (shortId && shortId.trim() !== "") {
       const cleanShort = shortId.trim().toLowerCase();
 
-      // Allowed: a-z, A-Z, 0-9, -, _
       const validPattern = /^[a-zA-Z0-9_-]+$/;
       if (!validPattern.test(cleanShort)) {
         req.flash("error", "Custom short code contains invalid characters");
         return res.redirect("/");
       }
 
-      // Check duplicate shortId
       const exists = await Link.findOne({ shortId: cleanShort });
       if (exists) {
         req.flash("error", "This short code is already taken, try another one");
@@ -66,17 +99,33 @@ exports.createLink = async (req, res) => {
 
       finalShortId = cleanShort;
     } else {
-      // If no custom code → auto-generate
       finalShortId = shortid.generate();
     }
 
-    // Create new record
     const newLink = new Link({
       user: req.user._id,
-      fullURL,
       shortId: finalShortId,
       clicks: 0,
+      private: private === "on",
     });
+
+    // 🔒 Encryption
+    if (encrypted === "on") {
+      const algorithm = "aes-256-cbc";
+      const key = crypto.scryptSync(process.env.SECRET, "salt", 32);
+      const iv = crypto.randomBytes(16);
+
+      const cipher = crypto.createCipheriv(algorithm, key, iv);
+      let encryptedData = cipher.update(fullURL, "utf8", "hex");
+      encryptedData += cipher.final("hex");
+
+      newLink.fullURL = encryptedData;
+      newLink.encrypted = true;
+      newLink.iv = iv.toString("hex");
+    } else {
+      newLink.fullURL = fullURL;
+      newLink.encrypted = false;
+    }
 
     await newLink.save();
 
@@ -97,17 +146,45 @@ exports.redirectToLongUrl = async (req, res) => {
 
     if (!link) return res.status(404).send("Invalid Short URL");
 
-    // Increase click count
+    // 🔹 Decrypt if needed
+    let targetURL = link.fullURL;
+    if (link.encrypted) {
+      const algorithm = "aes-256-cbc";
+      const key = crypto.scryptSync(process.env.SECRET, "salt", 32);
+      const decipher = crypto.createDecipheriv(
+        algorithm,
+        key,
+        Buffer.from(link.iv, "hex")
+      );
+      targetURL = decipher.update(link.fullURL, "hex", "utf8");
+      targetURL += decipher.final("utf8");
+    }
+
+    // 🔹 Advanced Analytics
+    const ip = req.ip;
+    const geo = geoip.lookup(ip) || {};
+    const ua = userAgent(req.headers["user-agent"]);
+
     link.clicks++;
+    link.clickHistory.push({
+      ip,
+      country: geo.country || "Unknown",
+      platform: ua.os.name || "Unknown",
+      browser: ua.browser.name || "Unknown",
+      userAgent: req.headers["user-agent"],
+      timestamp: new Date(),
+    });
+
     await link.save();
 
-    res.redirect(link.fullURL);
+    res.redirect(targetURL);
   } catch (err) {
     console.error(err);
     res.status(500).send("Error while redirecting");
   }
 };
 
+// 🔹 Stats, Delete, Update (unchanged)
 exports.getStats = async (req, res) => {
   try {
     const { id } = req.params;
@@ -129,8 +206,6 @@ exports.getStats = async (req, res) => {
 exports.deleteLink = async (req, res) => {
   try {
     const { id } = req.params;
-
-    // sirf apne links delete kar sakta 🛡
     const link = await Link.findOne({ _id: id, user: req.user._id });
 
     if (!link) {
@@ -151,7 +226,7 @@ exports.deleteLink = async (req, res) => {
 exports.updateLink = async (req, res) => {
   try {
     const { id } = req.params;
-    const { fullURL, customShortId } = req.body;
+    const { fullURL, customShortId, private } = req.body;
 
     const link = await Link.findOne({ _id: id, user: req.user._id });
     if (!link) {
@@ -159,7 +234,7 @@ exports.updateLink = async (req, res) => {
       return res.redirect("/stats");
     }
 
-    // If custom short code already exists (except this current link)
+    // ❗ Check custom short code conflict with any other link
     const conflict = await Link.findOne({
       shortId: customShortId,
       _id: { $ne: id },
@@ -170,8 +245,11 @@ exports.updateLink = async (req, res) => {
       return res.redirect("/stats");
     }
 
+    // Update required fields
     link.fullURL = fullURL;
     link.shortId = customShortId;
+    link.private = private === "on";
+
     await link.save();
 
     req.flash("success", "Link updated successfully!");

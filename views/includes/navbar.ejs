@@ -39,6 +39,12 @@
     <!-- RIGHT SIDE: MENU + THEME TOGGLE -->
     <div class="hidden md:flex items-center space-x-8">
 
+      <a href="/stats/public-links"
+          class="<%= currentPath === '/stats/public-links' 
+            ? 'text-green-500 font-semibold border-b-2 border-green-500 pb-1' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Public URLs
+        </a>
       <% if(currUser) { %>
 
         <a href="/healthcheck"
@@ -118,7 +124,15 @@
         Home
       </a>
 
+      <a href="/public-links"
+          class="<%= currentPath === '/public-links' 
+            ? 'text-green-500 font-semibold underline' 
+            : 'text-gray-700 dark:text-gray-300 hover:text-green-500' %> transition text-lg">
+          Publick URLs
+        </a>
       <% if(currUser) { %>
+
+
 
         <a href="/healthcheck"
           class="<%= currentPath === '/healthcheck' 

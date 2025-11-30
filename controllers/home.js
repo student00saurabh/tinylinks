@@ -60,3 +60,13 @@ module.exports.profile = async (req, res) => {
 module.exports.dashBoard = (req, res) => {
   res.render("TinyLink/healthz.ejs");
 };
+
+module.exports.about = (req, res) => {
+  res.render("others/about.ejs");
+};
+module.exports.privacy = (req, res) => {
+  res.render("others/privacy.ejs");
+};
+module.exports.terms = (req, res) => {
+  res.render("others/terms.ejs");
+};

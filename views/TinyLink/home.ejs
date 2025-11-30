@@ -5,7 +5,7 @@
   <!-- Header -->
   <div class="flex flex-col gap-1">
     <h1 class="text-3xl font-semibold text-gray-800 dark:text-gray-100">
-      👋 Welcome, <%= currUser.username %>
+      👋 Welcome, <%= currUser.name %>
     </h1>
     <p class="text-gray-600 dark:text-gray-400 text-sm">
       Manage and track your shortened links with analytics & quick actions.
@@ -14,44 +14,60 @@
 
   <!-- Add Link Form -->
   <form action="/stats" method="POST"
-        class="bg-white dark:bg-gray-900 shadow-md dark:shadow-lg border dark:border-gray-700 rounded-xl p-6 flex flex-col gap-4">
+      class="bg-white dark:bg-gray-900 shadow-md dark:shadow-lg border dark:border-gray-700 rounded-xl p-6 flex flex-col gap-4">
 
-    <div class="grid md:grid-cols-3 gap-3">
+  <div class="grid md:grid-cols-3 gap-3">
 
-      <!-- Long URL -->
-      <input 
-        required
-        type="url"
-        name="fullURL"
-        placeholder="Enter long URL"
-        class="border dark:border-gray-700 p-3 rounded-md bg-white dark:bg-gray-800 
-               text-gray-900 dark:text-gray-200 outline-none 
-               focus:ring focus:ring-blue-300 dark:focus:ring-blue-600 transition"
-      >
+    <!-- Long URL -->
+    <input 
+      required
+      type="url"
+      name="fullURL"
+      placeholder="Enter long URL"
+      class="border dark:border-gray-700 p-3 rounded-md bg-white dark:bg-gray-800 
+             text-gray-900 dark:text-gray-200 outline-none 
+             focus:ring focus:ring-blue-300 dark:focus:ring-blue-600 transition"
+    >
 
-      <!-- Custom Short Code -->
-      <input
-        type="text"
-        name="shortId"
-        placeholder="Custom short code (optional)"
-        class="border dark:border-gray-700 p-3 rounded-md bg-white dark:bg-gray-800 
-               text-gray-900 dark:text-gray-200 outline-none 
-               focus:ring focus:ring-blue-300 dark:focus:ring-blue-600 transition"
-      >
+    <!-- Custom Short Code -->
+    <input
+      type="text"
+      name="shortId"
+      placeholder="Custom short code (optional)"
+      class="border dark:border-gray-700 p-3 rounded-md bg-white dark:bg-gray-800 
+             text-gray-900 dark:text-gray-200 outline-none 
+             focus:ring focus:ring-blue-300 dark:focus:ring-blue-600 transition"
+    >
 
-      <!-- Submit -->
-      <button
-        class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 
-               text-white py-3 rounded-md font-medium transition flex items-center justify-center gap-2"
-      >
-        🔗 Shorten Link
-      </button>
-    </div>
+  </div>
 
-    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-      If custom code is not provided, a random short link will be generated automatically.
-    </p>
-  </form>
+  <!-- Checkboxes -->
+  <div >
+    <label class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+      <input type="checkbox" name="private" class="w-4 h-4 accent-blue-600 dark:accent-blue-500">
+      Private URL
+    </label>
+
+    <label class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+      <input type="checkbox" name="encrypted" class="w-4 h-4 accent-green-600 dark:accent-green-500">
+      Secure & Encrypted URL
+    </label>
+  </div>
+
+  <!-- Submit -->
+  <button
+    type="submit"
+    class="mt-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 
+           text-white py-3 rounded-md font-medium transition flex items-center justify-center gap-2"
+  >
+    🔗 Shorten Link
+  </button>
+
+  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+    If custom code is not provided, a random short link will be generated automatically.
+  </p>
+</form>
+
 
   <!-- Links List -->
   <% if (links.length === 0) { %>
@@ -76,10 +92,16 @@
                class="font-semibold text-blue-600 dark:text-blue-400 hover:underline md:w-24">
               <%= link.shortId %>
             </a>
-            <a href="<%= link.fullURL %>" target="_blank"
-               class="text-gray-700 dark:text-gray-200 hover:underline md:flex-1 truncate">
-              <%= link.fullURL.length > 40 ? link.fullURL.slice(0, 40) + '...' : link.fullURL %>
-            </a>
+            <% if(link.encrypted){ %>
+        <p class="text-gray-700 dark:text-gray-200 md:flex-1">
+          <%= link.fullURL.length > 30 ? link.fullURL.slice(0, 30) + '...' : link.fullURL %>
+        </p>
+        <% } else { %>
+        <a href="<%= link.fullURL %>" target="_blank"
+          class="text-gray-700 dark:text-gray-200 hover:underline md:flex-1">
+          <%= link.fullURL.length > 30 ? link.fullURL.slice(0, 30) + '...' : link.fullURL %>
+        </a>
+        <% } %>
           </div>
 
           <!-- Clicks & Last Clicked -->

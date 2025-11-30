@@ -1,0 +1,111 @@
+<% layout("/layouts/boilerplate") -%>
+
+<div class="min-h-screen bg-gradient-to-br from-green-100 via-white to-green-50
+            dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
+
+  <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">
+    🌐 Public TinyLinks
+  </h1>
+
+  <!-- Search Box -->
+  <div class="max-w-md mx-auto mb-6">
+    <input 
+      type="text"
+      id="searchInput"
+      placeholder="Search by code..."
+      class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-600
+             bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200
+             focus:ring-2 focus:ring-green-400 focus:border-green-500 outline-none"
+      onkeyup="searchLinks()"
+    />
+  </div>
+
+  <!-- Links Container -->
+  <div id="linksContainer" class="space-y-4 max-w-3xl mx-auto">
+    <% if (!links || links.length === 0) { %>
+      <p class="text-center text-gray-700 dark:text-gray-300 text-lg">
+        No public links available.
+      </p>
+    <% } else { %>
+      <% links.forEach(link => { %>
+        <div class="bg-white dark:bg-gray-800 border dark:border-gray-600 rounded-2xl shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between animate-fadeIn">
+
+          <!-- Short Code & Full URL -->
+          <div class="flex flex-col md:flex-row md:items-center md:space-x-4 flex-1 mb-2 md:mb-0">
+            <a href="<%= baseURL %>/stats/<%= link.shortId %>" target="_blank"
+               class="font-semibold text-blue-600 dark:text-blue-400 hover:underline md:w-24">
+              <%= link.shortId %>
+            </a>
+            <p class="text-gray-700 dark:text-gray-200 md:flex-1">
+              <%= link.fullURL.length > 40 ? link.fullURL.slice(0, 40) + '...' : link.fullURL %>
+            </p>
+          </div>
+
+          <!-- Clicks -->
+          <div class="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2 md:mb-0">
+            <span>Clicks: <b><%= link.clicks || 0 %></b></span>
+          </div>
+
+          <!-- Copy Button -->
+          <div class="m-2 flex justify-end md:justify-end">
+            <button onclick="copyLink('<%= baseURL %>/stats/<%= link.shortId %>')" 
+                    class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition text-sm">
+              Copy
+            </button>
+          </div>
+
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+
+  <!-- Pagination -->
+  <% if (totalPages > 1) { %>
+    <div class="flex justify-center space-x-2 mt-6">
+      <% for(let i = 1; i <= totalPages; i++) { %>
+        <a href="?page=<%= i %>"
+           class="px-3 py-1 rounded-md <%= i === currentPage ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200' %> hover:bg-green-400 transition">
+          <%= i %>
+        </a>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+
+<script>
+  // Search function
+  function searchLinks() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('#linksContainer > div');
+
+    cards.forEach(card => {
+      const shortCode = card.querySelector('a').innerText.toLowerCase();
+      card.style.display = shortCode.includes(input) ? 'flex' : 'none';
+    });
+  }
+
+  // Copy function with toast
+  function copyLink(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      const toast = document.createElement('div');
+      toast.innerText = 'Copied!';
+      toast.className = 'fixed bottom-6 right-6 bg-black text-white px-4 py-2 rounded shadow animate-fade dark:bg-gray-700 dark:text-gray-200';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    });
+  }
+</script>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .animate-fadeIn { animation: fadeIn 0.25s ease-out; }
+  
+  @keyframes fade {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade { animation: fade 0.5s forwards; }
+</style>

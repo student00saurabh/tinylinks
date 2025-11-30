@@ -1,0 +1,96 @@
+<% layout("/layouts/boilerplate") -%>
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+  <div class="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 sm:p-8">
+
+    <!-- Logo + Title -->
+    <div class="text-center mb-6">
+
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+        Email Verification
+      </h2>
+
+      <p class="text-gray-600 dark:text-gray-300">
+        A 6-digit OTP has been sent to your registered email.
+      </p>
+    </div>
+
+    <!-- OTP Form -->
+    <form action="/verify/<%= user._id %>" method="POST" class="space-y-4">
+      <div>
+        <input
+          type="text"
+          name="otp"
+          maxlength="6"
+          required
+          placeholder="Enter OTP"
+          class="w-full px-4 py-3 text-center text-lg tracking-widest rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-green-600 hover:bg-green-700 transition text-white py-3 rounded-lg font-semibold shadow-md"
+      >
+        Verify Email
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="my-6 border-t border-gray-300 dark:border-gray-700"></div>
+
+    <!-- Resend OTP -->
+    <div class="text-center">
+      <p class="text-gray-700 dark:text-gray-300 mb-2">Didn’t receive the OTP?</p>
+
+      <form
+        id="resendForm"
+        action="/verify/<%= user._id %>/resend"
+        method="POST"
+        class="inline-block"
+      >
+        <button
+          id="resendBtn"
+          type="submit"
+          class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-sm"
+        >
+          Resend OTP
+        </button>
+      </form>
+
+      <p id="timer" class="text-gray-500 dark:text-gray-400 mt-3 text-sm"></p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Disable resend button for 60s after clicking
+  const resendBtn = document.getElementById("resendBtn");
+  const timerEl = document.getElementById("timer");
+
+  if (resendBtn) {
+    resendBtn.addEventListener("click", function () {
+      setTimeout(() => startTimer(), 300);
+    });
+  }
+
+  function startTimer() {
+    let countdown = 60;
+    resendBtn.disabled = true;
+    resendBtn.innerText = `Resend OTP (${countdown}s)`;
+    timerEl.innerText = "Please wait before requesting a new OTP.";
+
+    const timer = setInterval(() => {
+      countdown--;
+      resendBtn.innerText = `Resend OTP (${countdown}s)`;
+
+      if (countdown <= 0) {
+        clearInterval(timer);
+        resendBtn.disabled = false;
+        resendBtn.innerText = "Resend OTP";
+        timerEl.innerText = "";
+      }
+    }, 1000);
+  }
+</script>

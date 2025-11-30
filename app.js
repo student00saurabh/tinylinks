@@ -15,6 +15,7 @@ const flash = require("connect-flash");
 const crypto = require("crypto");
 const Link = require("./models/Link.js");
 const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
@@ -22,6 +23,7 @@ const healthRouter = require("./routes/healthRoutes.js");
 const linkRouter = require("./routes/linkRoutes.js");
 const homeRouter = require("./routes/home.js");
 const userRouter = require("./routes/user.js");
+const resetRout = require("./routes/authRoutes.js");
 
 const dbUrl = process.env.ATLUSDB_URL;
 
@@ -46,10 +48,6 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 const store = MongoStore.create({
   mongoUrl: dbUrl,
-  cryptor: {
-    secret: process.env.SECRET,
-    algorithm: "aes-256-cbc",
-  },
   touchAfter: 24 * 60 * 60,
 });
 
@@ -63,10 +61,8 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: false,
   cookie: {
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   },
 };
 
@@ -77,10 +73,48 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(
+  new LocalStrategy({ usernameField: "email" }, User.authenticate())
+);
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.DOMAIN + "/auth/google/callback",
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        let email = profile.emails[0].value;
+        let name = profile.displayName;
+
+        // Check existing user
+        let existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+          return done(null, existingUser);
+        }
+
+        // Create new user
+        let newUser = new User({
+          name,
+          email,
+          googleId: profile.id,
+          isVerified: true,
+        });
+
+        await newUser.save();
+        return done(null, newUser);
+      } catch (err) {
+        return done(err, null);
+      }
+    }
+  )
+);
 
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
@@ -107,8 +141,26 @@ app.get("/", async (req, res, next) => {
   }
 });
 
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  }),
+  (req, res) => {
+    req.flash("success", "Logged in using Google!");
+    res.redirect("/");
+  }
+);
+
 app.use("/", userRouter);
 app.use("/", homeRouter);
+app.use("/", resetRout);
 app.use("/stats", linkRouter);
 app.use("/healthz", healthRouter);
 

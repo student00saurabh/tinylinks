@@ -30,8 +30,9 @@ cards.forEach((card) => {
 });
 
 // ------------------------------
-// THEME TOGGLE
+// THEME TOGGLE (FINAL CLEAN VERSION)
 // ------------------------------
+
 const themeToggle = document.getElementById("theme-toggle");
 const themeIcon = document.getElementById("theme-icon");
 
@@ -39,49 +40,64 @@ const mobileThemeToggle = document.getElementById("mobile-theme-toggle");
 const mobileThemeIcon = document.getElementById("mobile-theme-icon");
 const mobileThemeText = document.getElementById("mobile-theme-text");
 
-// Detect saved theme
-if (localStorage.getItem("theme") === "dark") {
-  document.documentElement.classList.add("dark");
-  if (themeIcon) themeIcon.classList.replace("fa-moon", "fa-sun");
-  if (mobileThemeIcon) mobileThemeIcon.classList.replace("fa-moon", "fa-sun");
-  if (mobileThemeText) mobileThemeText.textContent = "Light Mode";
+// Function: Update UI icons + text
+function applyThemeUI(isDark) {
+  if (isDark) {
+    themeIcon?.classList.replace("fa-moon", "fa-sun");
+    mobileThemeIcon?.classList.replace("fa-moon", "fa-sun");
+    mobileThemeText && (mobileThemeText.textContent = "Light Mode");
+  } else {
+    themeIcon?.classList.replace("fa-sun", "fa-moon");
+    mobileThemeIcon?.classList.replace("fa-sun", "fa-moon");
+    mobileThemeText && (mobileThemeText.textContent = "Dark Mode");
+  }
 }
 
-// Desktop Theme Toggle
-if (themeToggle) {
-  themeToggle.addEventListener("click", () => {
-    document.documentElement.classList.toggle("dark");
-
-    const isDark = document.documentElement.classList.contains("dark");
-
-    if (isDark) {
-      themeIcon.classList.replace("fa-moon", "fa-sun");
-      localStorage.setItem("theme", "dark");
-    } else {
-      themeIcon.classList.replace("fa-sun", "fa-moon");
-      localStorage.setItem("theme", "light");
-    }
-  });
+// Function: Apply theme + save to localStorage + update UI
+function setTheme(isDark) {
+  if (isDark) {
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+  applyThemeUI(isDark);
 }
 
-// Mobile Theme Toggle
-if (mobileThemeToggle) {
-  mobileThemeToggle.addEventListener("click", () => {
-    document.documentElement.classList.toggle("dark");
+// ------------------------------
+// INITIAL LOAD THEME CHECK
+// ------------------------------
+const savedTheme = localStorage.getItem("theme");
+const systemPrefersDark = window.matchMedia(
+  "(prefers-color-scheme: dark)"
+).matches;
 
-    const isDark = document.documentElement.classList.contains("dark");
-
-    if (isDark) {
-      mobileThemeIcon.classList.replace("fa-moon", "fa-sun");
-      mobileThemeText.textContent = "Light Mode";
-      localStorage.setItem("theme", "dark");
-    } else {
-      mobileThemeIcon.classList.replace("fa-sun", "fa-moon");
-      mobileThemeText.textContent = "Dark Mode";
-      localStorage.setItem("theme", "light");
-    }
-  });
+// Saved theme → apply it
+if (savedTheme === "dark") {
+  setTheme(true);
+} else if (savedTheme === "light") {
+  setTheme(false);
+} else {
+  // No saved theme → follow system
+  setTheme(systemPrefersDark);
 }
+
+// ------------------------------
+// DESKTOP TOGGLE
+// ------------------------------
+themeToggle?.addEventListener("click", () => {
+  const isDark = !document.documentElement.classList.contains("dark");
+  setTheme(isDark);
+});
+
+// ------------------------------
+// MOBILE TOGGLE
+// ------------------------------
+mobileThemeToggle?.addEventListener("click", () => {
+  const isDark = !document.documentElement.classList.contains("dark");
+  setTheme(isDark);
+});
 
 // ------------------------------
 // MOBILE MENU

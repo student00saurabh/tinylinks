@@ -23,12 +23,13 @@
         <!-- Username -->
         <div>
           <label for="username" class="block font-medium mb-1 text-gray-700 dark:text-gray-300">
-            Username
+            Email
           </label>
           <input
-            type="text"
-            id="username"
-            name="username"
+            type="email"
+            id="email"
+            name="email"
+            placeholder="example@gmail.com"
             required
             class="w-full px-4 py-2 rounded-xl border 
                    border-gray-300 dark:border-gray-600 
@@ -48,6 +49,7 @@
             type="password"
             id="password"
             name="password"
+            placeholder="password"
             required
             class="w-full px-4 py-2 rounded-xl border 
                    border-gray-300 dark:border-gray-600 
@@ -75,6 +77,31 @@
           Login
         </button>
       </form>
+
+
+
+      <!-- Divider -->
+<div class="flex items-center my-6">
+  <div class="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+  <span class="px-3 text-gray-600 dark:text-gray-300 text-sm">OR</span>
+  <div class="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+</div>
+
+<!-- Google Login Button -->
+<a
+  href="/auth/google"
+  class="w-full flex items-center justify-center gap-3 
+         py-2 mt-2 bg-white dark:bg-gray-800 
+         border border-gray-300 dark:border-gray-600 
+         rounded-xl shadow-sm hover:shadow-md
+         transition-all duration-300 text-gray-700 dark:text-gray-200 font-medium"
+>
+  <img src="https://www.svgrepo.com/show/475656/google-color.svg" 
+       class="w-5 h-5 bg-transparent dark:bg-transparent" />
+  Continue with Google
+</a>
+
+
 
       <!-- Signup Link -->
       <p class="mt-4 text-center text-gray-700 dark:text-gray-300">

@@ -28,6 +28,24 @@ module.exports.isOwner = async (req, res, next) => {
   }
   next();
 };
+
+module.exports.isVerified = async (req, res, next) => {
+  const { email } = req.body; // 👍 extract only email
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    req.flash("error", "User not found.");
+    return res.redirect("/login");
+  }
+
+  if (!user.isVerified) {
+    req.flash("error", "Please verify your email first.");
+    return res.redirect(`/verify-email?email=${email}`);
+  }
+
+  next();
+};
+
 module.exports.validateLink = (req, res, next) => {
   let { error } = linkSchema.validate(req.body);
   if (error) {

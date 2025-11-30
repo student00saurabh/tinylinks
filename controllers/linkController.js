@@ -24,7 +24,7 @@ module.exports.publickLinks = async (req, res) => {
       links,
       currentPage: page,
       totalPages,
-      baseURL: process.env.BASE_URL || "http://localhost:3000",
+      baseURL: "https://tl-hsxa.onrender.com",
     });
   } catch (err) {
     console.error(err);

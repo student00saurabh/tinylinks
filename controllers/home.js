@@ -70,3 +70,84 @@ module.exports.privacy = (req, res) => {
 module.exports.terms = (req, res) => {
   res.render("others/terms.ejs");
 };
+
+module.exports.getSitemap = (req, res) => {
+  const baseUrl = "https://tl-hsxa.onrender.com"; // change to your domain
+
+  const sitemap = `
+    <?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      <url>
+        <loc>${baseUrl}/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+      </url>
+
+      <url>
+        <loc>${baseUrl}/login</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+      </url>
+
+      <url>
+        <loc>${baseUrl}/signup</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+      </url>
+
+      <url>
+        <loc>${baseUrl}/stats/public-links</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+
+      <url>
+        <loc>${baseUrl}/about</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+      </url>
+
+      <url>
+        <loc>${baseUrl}/privacy-policy</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+      </url>
+
+      <url>
+        <loc>${baseUrl}/terms-&-conditions</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+      </url>
+
+      <url>
+        <loc>${baseUrl}/stats</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+      </url>
+    </urlset>
+  `.trim();
+
+  res.header("Content-Type", "application/xml");
+  res.send(sitemap);
+};
+
+module.exports.getAdsTxt = (req, res) => {
+  const adsText = `
+    google.com, pub-1329737604469399, DIRECT, f08c47fec0942fa0
+  `.trim();
+
+  res.header("Content-Type", "text/plain");
+  res.send(adsText);
+};
+
+exports.getRobotsTxt = (req, res) => {
+  const robots = `
+    User-agent: *
+    Allow: /
+
+    Sitemap: https://tl-hsxa.onrender.com/sitemap.xml
+  `.trim();
+
+  res.header("Content-Type", "text/plain");
+  res.send(robots);
+};

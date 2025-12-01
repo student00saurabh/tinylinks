@@ -114,7 +114,7 @@ module.exports.getSitemap = (req, res) => {
       </url>
 
       <url>
-        <loc>${baseUrl}/terms-&-conditions</loc>
+        <loc>${baseUrl}/terms-conditions</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
       </url>
